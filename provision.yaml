@@ -1,0 +1,4 @@
+- name: create bare-metal host
+  hosts: localhost
+  roles:
+  - role: packet

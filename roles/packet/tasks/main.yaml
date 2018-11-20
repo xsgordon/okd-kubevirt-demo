@@ -1,0 +1,23 @@
+---
+- pip:
+    name: packet-python
+
+- include_vars: packet_config.yaml
+- packet_sshkey:
+    key_file: ~/.ssh/ovirt_id_rsa.pub
+    label: tutorial key
+    auth_token: "{{packet_auth_token}}"
+
+- packet_device:
+    project_id: "{{packet_project_id}}"
+    auth_token: "{{packet_auth_token}}"
+    hostnames: "slipgate.online"
+    operating_system: centos_7
+    plan: x1.small.x86
+    facility: yyz1
+    wait_for_public_IPv: 4
+  register: device_output
+
+- debug:
+    var: "{{item.public_ipv4}}"
+  with_items: "{{device_output.devices}}"
