@@ -1,3 +1,4 @@
 ---
+packet_ssh_key: ~/.ssh/id_rsa.pub
 packet_auth_token: <Your Packet Auth Token Here>
 packet_project_id: <Your Packet Project ID Here>
