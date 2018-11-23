@@ -1,2 +1,5 @@
 install:
-	ansible-playbook provision.yaml --ask-vault-pass
+	ansible-playbook provision.yaml --tags packet_create  --ask-vault-pass
+
+clean:
+	ansible-playbook provision.yaml --tags packet_remove  --ask-vault-pass

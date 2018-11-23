@@ -3,13 +3,19 @@
     name: packet-python
 
 - include_vars: packet_config.yaml
+  tags: always
+
 - include_vars: packet_config_secret.yaml
+  tags: always
+
 - packet_sshkey:
     key_file: "{{packet_ssh_key}}"
     label: "OKD KubeVirt Demo Key"
     auth_token: "{{packet_auth_token}}"
+  tags: packet_create
 
-- packet_device:
+- name: Create Packet device(s)
+  packet_device:
     project_id: "{{packet_project_id}}"
     auth_token: "{{packet_auth_token}}"
     hostnames: "{{packet_hostname}}"
@@ -18,3 +24,24 @@
     facility: "{{packet_facility}}"
     wait_for_public_IPv: 4
   when: not ansible_check_mode
+  register: packet_hosts
+  tags: packet_create
+
+- name: Wait for SSH to Packet device(s)
+  wait_for:
+    delay: 1
+    host: "{{ item.public_ipv4 }}"
+    port: 22
+    state: "started"
+    timeout: 500
+  when: not ansible_check_mode
+  with_items: "{{ packet_hosts.devices }}"
+  tags: packet_create
+
+- name: Remove Packet device(s)
+  packet_device:
+    project_id: "{{packet_project_id}}"
+    auth_token: "{{packet_auth_token}}"
+    hostnames: "{{packet_hostname}}"
+    state: "absent"
+  tags: packet_remove
