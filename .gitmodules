@@ -4,3 +4,6 @@
 [submodule "operators/console-operator"]
 	path = operators/console-operator
 	url = https://github.com/openshift/console-operator.git
+[submodule "examples"]
+	path = examples
+	url = https://github.com/xsgordon/kubevirt-examples/
