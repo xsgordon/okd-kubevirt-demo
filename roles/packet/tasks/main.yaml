@@ -3,6 +3,7 @@
     name: packet-python
 
 - include_vars: packet_config.yaml
+- include_vars: packet_config_secret.yaml
 - packet_sshkey:
     key_file: "{{packet_ssh_key}}"
     label: "OKD KubeVirt Demo Key"
@@ -11,13 +12,9 @@
 - packet_device:
     project_id: "{{packet_project_id}}"
     auth_token: "{{packet_auth_token}}"
-    hostnames: "okd.kubevirt.demo"
-    operating_system: centos_7
-    plan: x1.small.x86
-    facility: yyz1
+    hostnames: "{{packet_hostname}}"
+    operating_system: "{{packet_os}}"
+    plan: "{{packet_plan}}"
+    facility: "{{packet_facility}}"
     wait_for_public_IPv: 4
-  register: device_output
-
-- debug:
-    var: "{{item.public_ipv4}}"
-  with_items: "{{device_output.devices}}"
+  when: not ansible_check_mode
