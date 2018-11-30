@@ -1,0 +1,5 @@
+- name: Create OpenShift Cluster
+  hosts: "*"
+  roles:
+  - role: oc
+  - role: kubevirt
