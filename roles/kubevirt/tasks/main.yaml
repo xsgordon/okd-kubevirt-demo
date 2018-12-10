@@ -1,16 +1,72 @@
 ---
+- include_vars: versions.yaml
+  tags: always
+
 - name: Download virtctl client
   get_url:
-    url: "https://github.com/kubevirt/kubevirt/releases/download/v0.10.0/virtctl-v0.10.0-linux-amd64"
+    url: "https://github.com/kubevirt/kubevirt/releases/download/{{kubevirt_version}}/virtctl-{{kubevirt_version}}-linux-amd64"
     dest: "/root/"
 
 - name: Move virtctl client into path
-  shell: "mv /root/virtctl-v0.10.0-linux-amd64 /usr/local/bin/virtctl"
+  shell: "mv /root/virtctl-{{kubevirt_version}}-linux-amd64 /usr/local/bin/virtctl"
   args:
     creates: "/usr/bin/virtctl"
-    removes: "/root/virtctl-v0.10.0-linux-amd64"
+    removes: "/root/virtctl-{{kubevirt_version}}-linux-amd64"
 
 - name: Mark virtctl executable
   file:
     path: "/usr/local/bin/virtctl"
     mode: "0777"
+
+# TODO: Switch to k8s_raw for most of the oc actions
+- name: Login to OpenShift
+  shell: "oc login -u system:admin"
+
+- name: Create kubevirt-demo project
+  shell: "oc new-project kubevirt-demo"
+
+- name: Create kubevirt-clone-demo project
+  shell: "oc new-project kubevirt-clone-demo"
+
+- name: Create KubeVirt policy for kubevirt-privileged
+  shell: "oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-privileged"
+
+- name: Create KubeVirt policy for kubevirt-controller
+  shell: "oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-controller"
+
+- name: Create KubeVirt policy for kubevirt-apiserver
+  shell: "oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:kubevirt-apiserver"
+
+- name: Create KubeVirt policy for kubevirt-web-ui
+  shell: "oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:kubevirt-web-ui:default"
+
+- name: Create KubeVirt policy for cdi-sa
+  shell: "oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:cdi-sa"
+
+# TODO: FEATURE GATE FOR DATAVOLUMES
+
+- name: Install KubeVirt
+  shell: "oc apply -f https://github.com/kubevirt/kubevirt/releases/download/{{kubevirt_version}}/kubevirt.yaml"
+
+- name: Install Containerized Data Importer
+  shell: "oc apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/{{cdi_version}}/cdi-controller.yaml"
+
+# TODO: OpenShift console
+#echo "INFO Deploying OpenShift-console..."
+#git submodule update operators/console-operator
+#- shell: "oc adm new-project console-operator
+#- shell: "oc create -f operators/console-operator/manifests/
+
+# TODO: Monitoring
+#echo "INFO Deploying Monitoring..."
+#git submodule update operators/cluster-monitoring-operator
+#- shell: "oc new-project cluster-monitoring
+#- shell: "oc create -f operators/cluster-monitoring-operator/manifests/
+
+# TODO: KubeVirt web-ui
+#- shell: "oc new-project kubevirt-web-ui
+#- shell: "oc apply -f ./manifests/kubevirt-web-ui.yaml
+#- shell: "oc project kubevirt-demo
+#- shell: "oc get route -n kubevirt-web-ui -o custom-columns="KUBEVIRT UI URL":.spec.host
+
+
