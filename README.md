@@ -9,6 +9,9 @@ The demo provisions a host using the selected infrastructure and initiates an
 all-in-one Kubernetes cluster using the OKD distribution of Kubernetes.
 Subsequently KubeVirt is installed and enabled on the cluster.
 
+**Note:** Currently the playbooks end after the creation of the Kubernetes
+cluster. Work in progress.
+
 Pre-requisites
 --------------
 
