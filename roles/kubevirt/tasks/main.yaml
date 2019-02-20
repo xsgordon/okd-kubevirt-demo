@@ -22,6 +22,9 @@
 - name: Login to OpenShift
   shell: "oc login -u system:admin"
 
+- name: Create CDI project
+  shell: "oc new-project cdi"
+
 - name: Create kubevirt-demo project
   shell: "oc new-project kubevirt-demo"
 
