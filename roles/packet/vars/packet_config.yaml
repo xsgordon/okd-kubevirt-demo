@@ -1,5 +1,5 @@
 ---
 packet_os: centos_7
-packet_plan: x1.small.x86
-packet_facility: yyz1
+packet_plan: t1.small.x86
+packet_facility: ewr1
 packet_hostname: okd.kubevirt.demo
