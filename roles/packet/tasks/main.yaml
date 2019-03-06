@@ -38,6 +38,15 @@
   with_items: "{{ packet_hosts.devices }}"
   tags: packet_create
 
+- name: Save hosts info
+  set_fact:
+    host_content: "{{ packet_hosts.devices[0].public_ipv4 }} ansible_ssh_user=root ansible_ssh_private_key={{packet_ssh_key}}"
+  tags: packet_create
+
+- name: Create hosts file
+  copy: content="{{ host_content }}" dest="hosts"
+  tags: packet_create
+
 - name: Remove Packet device(s)
   packet_device:
     project_id: "{{packet_project_id}}"
